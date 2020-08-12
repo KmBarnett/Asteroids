@@ -2,6 +2,14 @@ import Phaser from "phaser";
 import GasMeter from "./GasMeter";
 import AmmoBox from "./AmmoBox";
 import "./styles/index.scss";
+import pew from "./assets/pew.svg";
+import bullet from "./assets/bullet.svg";
+import ammo from "./assets/ammo.svg";
+import fuel from "./assets/fuel.svg";
+import astroid from "./assets/astroid.png";
+import gauge from "./assets/meter.svg";
+import space from "./assets/space.jpg";
+import ship from "./assets/ship.png";
 
 const config = {
   type: Phaser.AUTO,
@@ -135,14 +143,14 @@ function gameEnd(ship, asteroid) {
 }
 
 function preload() {
-  this.load.image("pew", "./assets/pew.svg");
-  this.load.image("bullet", "./assets/bullet.svg");
-  this.load.image("ammo", "./assets/ammo.svg");
-  this.load.image("fuel", "./assets/fuel.svg");
-  this.load.image("astroid", "./assets/astroid.png");
-  this.load.image("fuel-meter", "./assets/meter.svg");
-  this.load.image("space", "./assets/space.jpg");
-  this.load.spritesheet("ship", "./assets/ship.png", {
+  this.load.image("pew", pew);
+  this.load.image("bullet", bullet);
+  this.load.image("ammo", ammo);
+  this.load.image("fuel", fuel);
+  this.load.image("astroid", astroid);
+  this.load.image("fuel-meter", gauge);
+  this.load.image("space", space);
+  this.load.spritesheet("ship", ship, {
     frameWidth: 715,
     frameHeight: 370,
   });
