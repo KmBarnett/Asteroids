@@ -12,6 +12,8 @@ import space from "./assets/space.jpg";
 import ship from "./assets/ship.png";
 import explosion from "./assets/explosion.wav";
 import pewNoise from "./assets/shoot.wav";
+import reload from "./assets/reload.wav";
+import fill from "./assets/fill.wav";
 
 const config = {
   type: Phaser.AUTO,
@@ -100,6 +102,8 @@ function collectGas(player, fuel) {
   player.gas.fill();
   fuel.disableBody(true, true);
   newCan();
+  let audio = new Audio(fill);
+  audio.play();
 }
 
 function destroyAsteroid(pew, asteroid) {
@@ -128,6 +132,8 @@ function collectAmmo(player, ammo) {
   player.ammo.fill();
   ammo.disableBody(true, true);
   newAmmo();
+  let audio = new Audio(reload);
+  audio.play();
 }
 
 function gameEnd(ship, asteroid, game) {
