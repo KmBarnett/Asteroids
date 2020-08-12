@@ -45,20 +45,11 @@ let scoreText;
 let gameOver = false;
 
 function newGame() {
+  game.destroy(true)
   if (gameOver) {
     game = new Phaser.Game(config);
-    player;
-    cursors;
-    pews;
-    background;
-    bullets;
-    fuelMeter;
-    gas;
-    asteroids;
-    asteroidCount;
-    score = 0;
-    scoreText;
     gameOver = false;
+    score = 0
   }
 }
 
@@ -129,17 +120,23 @@ function collectAmmo(player, ammo) {
   newAmmo();
 }
 
-function gameEnd(ship, asteroid) {
+function gameEnd(ship, asteroid, game) {
   if (ship && asteroid) {
     ship.disableBody(true, true);
   }
 
   player.setTint(0xff0000);
   gameOver = true;
+  if (this) {
+    this.input.keyboard.on("keydown-SPACE", () => {
+      newGame();
+    });
+  } else {
+    game.input.keyboard.on("keydown-SPACE", () => {
+      newGame();
+    });
+  }
 
-  this.input.keyboard.on("keydown-SPACE", () => {
-    newGame();
-  });
 }
 
 function preload() {
@@ -174,7 +171,7 @@ function create() {
 
   scoreText = this.add.text(16, 16, "Score: 0", {
     fontSize: "32px",
-    fill: "#000",
+    fill: "#ffffff",
   });
 
   let asteroid = asteroids.create(
