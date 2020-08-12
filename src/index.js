@@ -22,7 +22,7 @@ const config = {
   },
 };
 
-const game = new Phaser.Game(config);
+let game = new Phaser.Game(config);
 let player;
 let cursors;
 let pews;
@@ -31,12 +31,31 @@ let bullets;
 let fuelMeter;
 let gas;
 let asteroids;
+let asteroidCount;
 let score = 0;
-var scoreText;
+let scoreText;
 let gameOver = false;
 
+function newGame() {
+  if (gameOver) {
+    game = new Phaser.Game(config);
+    player;
+    cursors;
+    pews;
+    background;
+    bullets;
+    fuelMeter;
+    gas;
+    asteroids;
+    asteroidCount;
+    score = 0;
+    scoreText;
+    gameOver = false;
+  }
+}
+
 function shoot(game) {
-  if (player.ammo.clip()) {
+  if (player.ammo.clip() && !gameOver) {
     const { x, y } = player.body.center;
     const newPew = pews.create(x, y, "pew");
     newPew.setAngle(player.angle);
@@ -77,16 +96,42 @@ function collectGas(player, fuel) {
 }
 
 function destroyAsteroid(pew, asteroid) {
-  score += 100
+  score += 100;
   asteroid.disableBody(true, true);
   pew.disableBody(true, true);
   scoreText.setText("Score: " + score);
+}
+
+function newAsteroid(game) {
+  let asteroid = asteroids.create(
+    Phaser.Math.Between(50, 750),
+    Phaser.Math.Between(50, 550),
+    "astroid"
+  );
+
+  Phaser.Math.Angle.Random();
+  asteroid.setAngle(Phaser.Math.Between(0, 360));
+
+  game.physics.velocityFromAngle(asteroid.angle, 100, asteroid.body.velocity);
 }
 
 function collectAmmo(player, ammo) {
   player.ammo.fill();
   ammo.disableBody(true, true);
   newAmmo();
+}
+
+function gameEnd(ship, asteroid) {
+  if (ship && asteroid) {
+    ship.disableBody(true, true);
+  }
+
+  player.setTint(0xff0000);
+  gameOver = true;
+
+  this.input.keyboard.on("keydown-SPACE", () => {
+    newGame();
+  });
 }
 
 function preload() {
@@ -123,15 +168,15 @@ function create() {
     fontSize: "32px",
     fill: "#000",
   });
-  
+
   let asteroid = asteroids.create(
     Phaser.Math.Between(50, 750),
     Phaser.Math.Between(50, 550),
     "astroid"
   );
 
-  Phaser.Math.Angle.Random()
-    asteroid.setAngle(Phaser.Math.Between(0, 360));
+  Phaser.Math.Angle.Random();
+  asteroid.setAngle(Phaser.Math.Between(0, 360));
 
   this.physics.velocityFromAngle(asteroid.angle, 100, asteroid.body.velocity);
 
@@ -155,6 +200,7 @@ function create() {
   this.physics.add.overlap(player, bullets, collectAmmo, null, this);
   this.physics.add.collider(gas, fuelMeter, moveCan, null, this);
   this.physics.add.collider(pews, asteroids, destroyAsteroid, null, this);
+  this.physics.add.overlap(player, asteroids, gameEnd, null, this);
 
   this.anims.create({
     key: "no-gas",
@@ -181,7 +227,10 @@ function create() {
 
 let speed = 0;
 function update() {
+  asteroidCount = score / 100 + 1;
   if (gameOver) {
+    this.physics.pause();
+    this.add.text(300, 275, "Game Over", { fontSize: "32px", fill: "yellow" });
     player.anims.play("no-gas");
     return;
   }
@@ -224,11 +273,16 @@ function update() {
   }
 
   if (player.gas.gauge() === 0) {
-    this.physics.pause();
-    this.add.text(300, 275, "Game Over", { fontSize: "32px", fill: "yellow" });
-    gameOver = true;
+    gameEnd(null, null, this);
   }
 
+  if (asteroidCount > 5) {
+    asteroidCount = 5;
+  }
+
+  if (asteroids.countActive(true) < asteroidCount) {
+    newAsteroid(this);
+  }
   this.physics.world.wrap(player, 32);
   this.physics.world.wrap(asteroids, 32);
 }
