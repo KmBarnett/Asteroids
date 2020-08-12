@@ -53,6 +53,10 @@ function newGame() {
   }
 }
 
+function gameStart(game) {
+  game.physics.add.overlap(player, asteroids, gameEnd, null, game);
+}
+
 function shoot(game) {
   if (player.ammo.clip() && !gameOver) {
     const { x, y } = player.body.center;
@@ -205,7 +209,20 @@ function create() {
   this.physics.add.overlap(player, bullets, collectAmmo, null, this);
   this.physics.add.collider(gas, fuelMeter, moveCan, null, this);
   this.physics.add.collider(pews, asteroids, destroyAsteroid, null, this);
-  this.physics.add.overlap(player, asteroids, gameEnd, null, this);
+
+
+  this.tweens.add({
+    targets: [player],
+    alpha: 0,
+    ease: "Cubic.easeInOut",
+    duration: 500,
+    repeat: 5,
+    onComplete:() => gameStart(this),
+    yoyo: true,
+  });
+
+  // setTimeout(gameStart, 5000, this)
+  
 
   this.anims.create({
     key: "no-gas",
