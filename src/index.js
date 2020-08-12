@@ -10,6 +10,8 @@ import astroid from "./assets/astroid.png";
 import gauge from "./assets/meter.svg";
 import space from "./assets/space.jpg";
 import ship from "./assets/ship.png";
+import explosion from "./assets/explosion.wav";
+import pewNoise from "./assets/shoot.wav";
 
 const config = {
   type: Phaser.AUTO,
@@ -66,6 +68,8 @@ function shoot(game) {
     newPew.setScale(0.1);
     game.physics.velocityFromAngle(newPew.angle, 500, newPew.body.velocity);
     player.ammo.shoot();
+    let audio = new Audio(pewNoise);
+    audio.play();
   }
 }
 
@@ -103,6 +107,8 @@ function destroyAsteroid(pew, asteroid) {
   asteroid.disableBody(true, true);
   pew.disableBody(true, true);
   scoreText.setText("Score: " + score);
+  let audio = new Audio(explosion);
+  audio.play();
 }
 
 function newAsteroid(game) {
@@ -127,6 +133,8 @@ function collectAmmo(player, ammo) {
 function gameEnd(ship, asteroid, game) {
   if (ship && asteroid) {
     ship.disableBody(true, true);
+    let audio = new Audio(explosion);
+    audio.play();
   }
 
   player.setTint(0xff0000);
@@ -226,7 +234,7 @@ function create() {
 
   this.anims.create({
     key: "no-gas",
-    frames: [{ key: "ship", frame: 0 }],
+    frames: [{ key: "ship", frame: 0  }],
     frameRate: 0,
   });
 
